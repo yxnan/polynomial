@@ -19,13 +19,13 @@ PolyPtr inputPolynomial()
     printf("\n");
     scanf("%lf", &factor);
     if(factor == 0) return NULL;
-    p = (PolyPtr)malloc(sizeof(struct polynomial));
+    p = newPolynomial();
     p->factor = factor;
     scanf("%d%lf", &p->power, &factor);
     head = p;
     while(factor != 0)
     {
-        p->next = (PolyPtr)malloc(sizeof(struct polynomial));
+        p->next = newPolynomial();
         p = p->next;
         p->factor = factor;
         scanf("%d%lf", &p->power, &factor);
@@ -80,19 +80,132 @@ PolyPtr sortPolynomial(PolyPtr head)
 
 PolyPtr addPoly(PolyPtr poly1, PolyPtr poly2)
 {
-    printf("Pretend to add\n");
-    return NULL;
+    PolyPtr head,list=NULL,ptr;
+    list = newPolynomial();
+    head=list;
+    if(poly1 == NULL || poly2 == NULL) return NULL;
+    while(poly1 != NULL && poly2 != NULL)
+    {
+        if(poly1->power > poly2->power){
+
+            list->power = poly1->power;
+            list->factor = poly1->factor;
+            list=list->next;
+            poly1=poly1->next;
+        }
+        else if(poly1->power < poly2->power){
+
+            list->power = poly2->power;
+            list->factor = poly2->factor;
+            list=list->next;
+            poly2=poly2->next;
+        }
+        else{
+            if(poly1->factor + poly2->factor)
+                {
+                    list->power = poly1->power;
+                    list->factor = poly1->factor + poly2->factor;
+                    list = list->next;
+                }
+                poly1 = poly1->next;
+                poly2 = poly2->next;
+                break;
+            }
+    }
+    for( ;poly1 != NULL;poly1 = poly1->next)
+    {
+        list->factor = poly1->factor;
+        list->power =poly1->power;
+        list = list->next;
+    }
+        for( ;poly2 != NULL;poly2 = poly2->next)
+    {
+        list->factor = poly2->factor;
+        list->power =poly2->power;
+        list = list->next;
+    }
+    list->next = NULL;
+    ptr = head;
+    head = head->next;
+    free(ptr);
+    return head;
 }
 
 PolyPtr subPoly(PolyPtr poly1, PolyPtr poly2)
 {
-    printf("Pretend to sub\n");
-    return NULL;
+    PolyPtr head,list=NULL,ptr;
+    list = newPolynomial();
+    head = list;
+    if(poly1 == NULL || poly2 == NULL) return NULL;
+    while(poly1 != NULL && poly2 != NULL)
+    {
+        if(poly1->power > poly2->power){
+
+            list->power = poly1->power;
+            list->factor = poly1->factor;
+            list=list->next;
+            poly1=poly1->next;
+        }
+        else if(poly1->power < poly2->power){
+
+            list->power = poly2->power;
+            list->factor = (-1) * poly2->factor;
+            list=list->next;
+            poly2=poly2->next;
+        }
+        else{
+            if(poly1->factor - poly2->factor)
+                {
+                    list->power = poly1->power;
+                    list->factor = poly1->factor - poly2->factor;
+                    list = list->next;
+                }
+                poly1 = poly1->next;
+                poly2 = poly2->next;
+                break;
+            }
+    }
+    for( ;poly1 != NULL;poly1 = poly1->next)
+    {
+        list->factor = poly1->factor;
+        list->power =poly1->power;
+        list = list->next;
+    }
+        for( ;poly2 != NULL;poly2 = poly2->next)
+    {
+        list->factor = (-1) * poly2->factor;
+        list->power =poly2->power;
+        list = list->next;
+    }
+    list->next = NULL;
+    ptr = head;
+    head = head->next;
+    free(ptr);
+    return head;
 }
+
 PolyPtr mulPoly(PolyPtr poly1, PolyPtr poly2)
 {
-    printf("Pretend to mul\n");
-    return NULL;
+    PolyPtr head,list,add,ptr;
+    list = newPolynomial();
+    add = newPolynomial();
+    head = list;
+    ptr = poly2;
+    if(poly1 == NULL || poly2 == NULL) return NULL;
+    while(poly1 != NULL)
+    {
+        for(;poly2 != NULL;poly2 = poly2->next)
+        {
+            list->power = poly1->power + poly2->power;
+            list->factor = poly1->factor * poly2->factor;
+            list = list->next;
+        }
+    poly2 = ptr;
+    poly1 = poly1->next;
+    add = addPoly(list,add);
+    list = head;
+    }
+    return add;
 }
 
 

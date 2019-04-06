@@ -10,6 +10,11 @@ struct polynomial
     PolyPtr next;
 };
 
+extern inline PolyPtr newPolynomial()
+{
+    return (PolyPtr) malloc(sizeof(struct polynomial));
+}
+
 void    printPolynomial     (PolyPtr head);
 PolyPtr inputPolynomial     ();
 PolyPtr sortPolynomial      (PolyPtr head);
