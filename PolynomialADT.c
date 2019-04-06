@@ -16,7 +16,6 @@ PolyPtr inputPolynomial()
 {
     PolyPtr p, head;
     double factor;
-    printf("\n");
     scanf("%lf", &factor);
     if(factor == 0) return NULL;
     p = newPolynomial();

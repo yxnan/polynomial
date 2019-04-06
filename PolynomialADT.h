@@ -10,7 +10,7 @@ struct polynomial
     PolyPtr next;
 };
 
-extern inline PolyPtr newPolynomial()
+static inline PolyPtr newPolynomial()
 {
     return (PolyPtr) malloc(sizeof(struct polynomial));
 }

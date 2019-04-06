@@ -95,9 +95,9 @@ int main()
             exit(0);
 
             case INPUT:
-            printf("请输入第一个多项式：\n");
+            printf("请输入第一个多项式：\n\n");
             poly1 = inputPolynomial();
-            printf("请输入第二个多项式：\n");
+            printf("\n请输入第二个多项式：\n\n");
             poly2 = inputPolynomial();
 
             break;
