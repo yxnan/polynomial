@@ -1,11 +1,11 @@
 # Project: polynomial
-# This is for Linux
+# This is for Windows
 
 CC       = gcc
 TMPDIR   = obj/
 OBJ      = obj/PolynomialADT.o obj/polynomialMain.o
 INCS     = -I "./lib/"
-BIN      = polynomial
+BIN      = polynomial.exe
 FLAGS    = $(INCS)
 RM       = rm -f
 
@@ -21,7 +21,7 @@ $(BIN): $(OBJ)
 	$(CC) $(OBJ) -o $(BIN)
 
 obj/:
-	mkdir obj/
+	mkdir obj
 
 obj/polynomialMain.o : polynomialMain.c
 	$(CC) -c polynomialMain.c -o obj/polynomialMain.o $(FLAGS)
