@@ -4,9 +4,9 @@
 CC       = gcc
 TMPDIR   = obj/
 OBJ      = obj/PolynomialADT.o obj/polynomialMain.o
-INCS     = -I "./lib/"
+INCS     = -I "./"
 BIN      = polynomial.exe
-FLAGS    = $(INCS)
+CFLAGS    = $(INCS)
 RM       = rm -f
 
 .PHONY: all clean
@@ -20,11 +20,11 @@ clean:
 $(BIN): $(OBJ)
 	$(CC) $(OBJ) -o $(BIN)
 
-obj/:
+$(TMPDIR):
 	mkdir obj
 
 obj/polynomialMain.o : polynomialMain.c
-	$(CC) -c polynomialMain.c -o obj/polynomialMain.o $(FLAGS)
+	$(CC) -c polynomialMain.c -o obj/polynomialMain.o $(CFLAGS)
 
-obj/PolynomialADT.o : lib/PolynomialADT.c lib/PolynomialADT.h
-	$(CC) -c lib/PolynomialADT.c -o obj/PolynomialADT.o $(FLAGS)
+obj/PolynomialADT.o : PolynomialADT.c PolynomialADT.h
+	$(CC) -c PolynomialADT.c -o obj/PolynomialADT.o $(CFLAGS)
