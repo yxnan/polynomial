@@ -2,235 +2,258 @@
 #include <stdlib.h>
 #include "PolynomialADT.h"
 
-/****************************************** 
-	打印出一个二元多项式，打印格式为： 
-	每一行打印多项式的一项；
-	其中，每一项打印格式：
-	系数 * x^x的次数 * y^y的次数
-******************************************/
-void printPolynomial(PolyPtr head)
+void printPolynomial(PolyPtr poly)
 {
-    PolyPtr p = head;
-    while(p != NULL)
+    if (poly->factor < 1e-6)
+        printf("0");
+    else
     {
-        printf("%.1lf* x^%d * y^%d\n", p->factor, p->powerx,p->powery);
+        PolyPtr p = poly;
+        printf("%.4lf(x^%d)(y^%d)", p->factor, p->powerX,p->powerY);
         p = p->next;
+
+        while (p)
+        {
+            if (p->factor > 0) printf(" +");
+            printf("%.4lf(x^%d)(y^%d)", p->factor, p->powerX,p->powerY);
+            p = p->next;
+        }
     }
+    printf("\n");
 }
 
-/****************************************
-	输入一个二元n次方程组 
-	输入格式为：系数 x的次数 y的次数 
-	输入系数为0再按回车，结束输入 
-****************************************/       
+void swapData(PolyPtr node1, PolyPtr node2)
+{
+    double tmp_factor;
+    int    tmp_X, tmp_Y;
+
+    tmp_factor = node1->factor;
+    tmp_X = node1->powerX;
+    tmp_Y = node1->powerY;
+
+    node1->factor = node2->factor;
+    node1->powerX = node2->powerX;
+    node1->powerY = node2->powerY;
+
+    node2->factor = tmp_factor;
+    node2->powerX = tmp_X;
+    node2->powerY = tmp_Y;
+}
+
 PolyPtr inputPolynomial()
 {
-    PolyPtr p, head;
     double factor;
-    scanf("%lf", &factor);
-    if(factor == 0) return NULL;
-    p = newPolynomial();
-    p->factor = factor;
-    scanf("%d%d%lf", &p->powerx, &p->powery, &factor);
-    head = p;
-    while(factor != 0)
+    PolyPtr head = newPolynomial();
+    PolyPtr prev = head, tmp;
+    head->factor = 0;
+    head->next   = NULL;
+
+    while (1)
     {
-        p->next = newPolynomial();
-        p = p->next;
-        p->factor = factor;
-        scanf("%d%lf", &p->powerx, &p->powery, &factor);
+        scanf("%lf", &factor);
+        if (factor == 0) return head->next;
+
+        tmp = newPolynomial();
+        tmp->factor = factor;
+        scanf("%d%d", &(tmp->powerX), &(tmp->powerY));
+        tmp->next = NULL;
+
+        prev->next = tmp;
+        prev = tmp;
     }
-    p->next = NULL;
-    return head;
 }
 
-/***************************************************** 
-	将二元n次方程组排序： 
-	若y的次数不一样，按y的次数从小到大的升序排序； 
-	若y的次数一样，按x的次数从小到大的升序排序；
-	若x和y的次数都一样，合并系数。 
-*****************************************************/
-PolyPtr sortPolynomial(PolyPtr head)
+PolyPtr sortPolynomial(PolyPtr poly)
 {
-    PolyPtr p, p1, p2;
-    if(head == NULL)return NULL;
-    p1 = head->next;
-    head->next = NULL;
-    if(p1 == NULL)return head;
+    bubbleSortPoly(poly);
+    mergeDup(poly);
+    return poly;
+}
 
-    while(p1 != NULL)
+void mergeDup(PolyPtr poly)
+{
+    PolyPtr prev = poly, cur = poly->next;
+    while (cur)
     {
-        p2 = p1->next;
-        if(head->powerx == p1->powerx 
-			&& head->powery == p1->powery)
+        if (prev->powerX == cur->powerX
+         && prev->powerY == cur->powerY)
         {
-            head->factor += p1->factor;
-            free(p1);
-            p1 = p2;
-            continue;
-        }
-        if(head->powery > p1->powery
-			|| (head->powery == p1->powery
-			&& head->powerx > p1->powerx))
-        {
-            p1->next = head;
-            head = p1;
-            p1 = p2;
-            continue;
-        }
-        p = head;
-        while(p->next != NULL 
-			&& (p->next->powery < p1->powery
-			|| (p->next->powery == p1->powery
-			&& p->next->powerx < p1->powerx)))
-            p = p->next;
-        if(p->next == NULL 
-			|| (p->next->powery > p1->powery
-			|| (p->next->powery == p1->powery
-			&& p->next->powerx > p1->powerx)))
-        {
-            p1->next = p->next;
-            p->next = p1;
+            prev->factor += cur->factor;
+            cur = cur->next;
+            free(prev->next);
+            prev->next = cur;
         }
         else
         {
-            p->next->factor += p1->factor;
-            free(p1);
+            prev = cur;
+            cur  = cur->next;
         }
-        p1 = p2;
     }
-
-    return head;
 }
+
+void bubbleSortPoly(PolyPtr poly)
+{
+    PolyPtr tailNode = NULL;
+    PolyPtr flagNode = NULL;
+
+    while (flagNode != poly)
+    {
+        tailNode = flagNode;
+        flagNode = poly;
+        PolyPtr prev = poly;
+        while (prev->next != tailNode)
+        {
+            PolyPtr cur = prev->next;
+            if (prev->powerX < cur->powerX)
+            {
+                swapData(prev, cur);
+                flagNode = cur;
+            }
+            else if (prev->powerX == cur->powerX)
+            {
+                if (prev->powerY < cur->powerY)
+                {
+                    swapData(prev, cur);
+                    flagNode = cur;
+                }
+            }
+            prev = prev->next;
+        }
+    }
+}
+
+PolyPtr copyNode(PolyPtr node)
+{
+    PolyPtr cp = newPolynomial();
+
+    cp->factor = node->factor;
+    cp->powerX = node->powerX;
+    cp->powerY = node->powerY;
+    return cp;
+}
+
+// PolyPtr addPoly             (PolyPtr poly1, PolyPtr poly2){};
+// PolyPtr subPoly             (PolyPtr poly1, PolyPtr poly2){};
+// PolyPtr mulPoly             (PolyPtr poly1, PolyPtr poly2){};
 
 PolyPtr addPoly(PolyPtr poly1, PolyPtr poly2)
 {
-    PolyPtr head,list=NULL,ptr;
-    list = newPolynomial();
-    head=list;
-    if(poly1 == NULL || poly2 == NULL) return NULL;
-    while(poly1 != NULL && poly2 != NULL)
-    {
-        if(poly1->power > poly2->power){
+    PolyPtr resPoly = newPolynomial(), prev = resPoly;
+    PolyPtr ptr1 = poly1, ptr2 = poly2;
+    PolyPtr tmp;
 
-            list->power = poly1->power;
-            list->factor = poly1->factor;
-            list=list->next;
-            poly1=poly1->next;
-        }
-        else if(poly1->power < poly2->power){
+    resPoly->next = NULL;
 
-            list->power = poly2->power;
-            list->factor = poly2->factor;
-            list=list->next;
-            poly2=poly2->next;
+    while (ptr1 && ptr2)
+    {
+        if (ptr1->powerX > ptr2->powerX
+            ||(ptr1->powerX == ptr2->powerX && ptr1->powerY > ptr2->powerY))
+        {
+            tmp = copyNode(ptr1);
+            ptr1 = ptr1->next;
         }
-        else{
-            if(poly1->factor + poly2->factor)
-                {
-                    list->power = poly1->power;
-                    list->factor = poly1->factor + poly2->factor;
-                    list = list->next;
-                }
-                poly1 = poly1->next;
-                poly2 = poly2->next;
-                break;
-            }
+        else if (ptr1->powerX < ptr2->powerX
+            ||(ptr1->powerX == ptr2->powerX && ptr1->powerY < ptr2->powerY))
+        {
+            tmp = copyNode(ptr2);
+            ptr2 = ptr2->next;
+        }
+        else
+        {
+            tmp = copyNode(ptr1);
+            tmp->factor += ptr2->factor;
+            ptr1 = ptr1->next;
+            ptr2 = ptr2->next;
+        }
+
+        if (tmp->factor > 1e-6)
+        {
+            prev->next = tmp;
+            prev = tmp;
+        }
     }
-    for( ;poly1 != NULL;poly1 = poly1->next)
-    {
-        list->factor = poly1->factor;
-        list->power =poly1->power;
-        list = list->next;
-    }
-        for( ;poly2 != NULL;poly2 = poly2->next)
-    {
-        list->factor = poly2->factor;
-        list->power =poly2->power;
-        list = list->next;
-    }
-    list->next = NULL;
-    ptr = head;
-    head = head->next;
-    free(ptr);
-    return head;
+
+    prev->next = NULL;
+    return resPoly->next;
 }
 
 PolyPtr subPoly(PolyPtr poly1, PolyPtr poly2)
 {
-    PolyPtr head,list=NULL,ptr;
-    list = newPolynomial();
-    head = list;
-    if(poly1 == NULL || poly2 == NULL) return NULL;
-    while(poly1 != NULL && poly2 != NULL)
-    {
-        if(poly1->power > poly2->power){
 
-            list->power = poly1->power;
-            list->factor = poly1->factor;
-            list=list->next;
-            poly1=poly1->next;
-        }
-        else if(poly1->power < poly2->power){
+    PolyPtr resPoly = newPolynomial(), prev = resPoly;
+    PolyPtr ptr1 = poly1, ptr2 = poly2;
+    PolyPtr tmp;
 
-            list->power = poly2->power;
-            list->factor = (-1) * poly2->factor;
-            list=list->next;
-            poly2=poly2->next;
+    resPoly->next = NULL;
+
+    while (ptr1 && ptr2)
+    {
+        if (ptr1->powerX > ptr2->powerX
+            ||(ptr1->powerX == ptr2->powerX && ptr1->powerY > ptr2->powerY))
+        {
+            tmp = copyNode(ptr1);
+            ptr1 = ptr1->next;
         }
-        else{
-            if(poly1->factor - poly2->factor)
-                {
-                    list->power = poly1->power;
-                    list->factor = poly1->factor - poly2->factor;
-                    list = list->next;
-                }
-                poly1 = poly1->next;
-                poly2 = poly2->next;
-                break;
-            }
+        else if (ptr1->powerX < ptr2->powerX
+            ||(ptr1->powerX == ptr2->powerX && ptr1->powerY < ptr2->powerY))
+        {
+            tmp = copyNode(ptr2);
+            tmp->factor = -(tmp->factor);
+            ptr2 = ptr2->next;
+        }
+        else
+        {
+            tmp = copyNode(ptr1);
+            tmp->factor -= ptr2->factor;
+            ptr1 = ptr1->next;
+            ptr2 = ptr2->next;
+        }
+
+        if (tmp->factor > 1e-6)
+        {
+            prev->next = tmp;
+            prev = tmp;
+        }
     }
-    for( ;poly1 != NULL;poly1 = poly1->next)
+
+    prev->next = NULL;
+    if (resPoly->next == NULL)
     {
-        list->factor = poly1->factor;
-        list->power =poly1->power;
-        list = list->next;
+        tmp->factor = 0.0;
+        return tmp;
     }
-        for( ;poly2 != NULL;poly2 = poly2->next)
-    {
-        list->factor = (-1) * poly2->factor;
-        list->power =poly2->power;
-        list = list->next;
-    }
-    list->next = NULL;
-    ptr = head;
-    head = head->next;
-    free(ptr);
-    return head;
+    return resPoly->next;
 }
 
 PolyPtr mulPoly(PolyPtr poly1, PolyPtr poly2)
 {
-    PolyPtr head,list,add,ptr;
-    list = newPolynomial();
-    add = newPolynomial();
-    head = list;
-    ptr = poly2;
-    if(poly1 == NULL || poly2 == NULL) return NULL;
-    while(poly1 != NULL)
+    if (poly1->factor < 1e-6 || poly2->factor < 1e-6)
     {
-        for(;poly2 != NULL;poly2 = poly2->next)
-        {
-            list->power = poly1->power + poly2->power;
-            list->factor = poly1->factor * poly2->factor;
-            list = list->next;
-        }
-    poly2 = ptr;
-    poly1 = poly1->next;
-    add = addPoly(list,add);
-    list = head;
+        return poly1;
     }
-    return add;
+
+    PolyPtr resPoly = newPolynomial(), prev = resPoly;
+    PolyPtr ptr1 = poly1, ptr2 = poly2;
+    PolyPtr tmp;
+
+    resPoly->next = NULL;
+
+    while (ptr1 && ptr2)
+    {
+        tmp = copyNode(ptr1);
+        tmp->factor *= ptr2->factor;
+        tmp->powerX += ptr2->powerX;
+        tmp->powerY += ptr2->powerY;
+
+        ptr1 = ptr1->next;
+        ptr2 = ptr2->next;
+
+        prev->next = tmp;
+        prev = tmp;
+    }
+
+    prev->next = NULL;
+
+    sortPolynomial(resPoly->next);
+    return resPoly->next;
 }
-
-

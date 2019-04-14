@@ -6,7 +6,7 @@ TMPDIR   = obj/
 OBJ      = obj/PolynomialADT.o obj/polynomialMain.o
 INCS     = -I "./"
 BIN      = polynomial
-CFLAGS    = $(INCS)
+CFLAGS   = $(INCS)
 RM       = rm -f
 
 .PHONY: all clean

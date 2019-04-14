@@ -52,14 +52,14 @@ OpFuncPtr operate(ChoiceType op)
 
 ChoiceType promptInput()
 {
-    printf("\nÇëÑ¡Ôñ²Ù×÷£º\n");
+    printf("\nè¯·é€‰æ‹©æ“ä½œï¼š\n");
     printf("-----------------------\n\n");
-    printf("    1 - ¶àÏîÊ½ÊäÈë\n");
-    printf("    2 - ¶àÏîÊ½Ïà¼Ó\n");
-    printf("    3 - ¶àÏîÊ½Ïà¼õ\n");
-    printf("    4 - ¶àÏîÊ½Ïà³Ë\n");
-    printf("    5 - ¶àÏîÊ½Êä³ö\n");
-    printf("    0 - ÍË³ö³ÌĞò\n");
+    printf("    1 - å¤šé¡¹å¼è¾“å…¥\n");
+    printf("    2 - å¤šé¡¹å¼ç›¸åŠ \n");
+    printf("    3 - å¤šé¡¹å¼ç›¸å‡\n");
+    printf("    4 - å¤šé¡¹å¼ç›¸ä¹˜\n");
+    printf("    5 - å¤šé¡¹å¼è¾“å‡º\n");
+    printf("    0 - é€€å‡ºç¨‹åº\n");
     printf("-----------------------\n");
 
     char input;
@@ -67,9 +67,9 @@ ChoiceType promptInput()
         input = getchar();
     } while(input == '\n');
 
-    buffClear();    // Çå¿Õ»º´æÇø
+    buffClear();    // æ¸…ç©ºç¼“å­˜åŒº
 
-    if (input >= '0' && input <= '5')   // ¼ì²éÓĞĞ§²Ù×÷·¶Î§
+    if (input >= '0' && input <= '5')   // æ£€æŸ¥æœ‰æ•ˆæ“ä½œèŒƒå›´
         return (ChoiceType)(input - '0');
     else
         return UNKNOWN;
@@ -95,9 +95,9 @@ int main()
             exit(0);
 
             case INPUT:
-            printf("ÇëÊäÈëµÚÒ»¸ö¶àÏîÊ½£º\n\n");
+            printf("è¯·è¾“å…¥ç¬¬ä¸€ä¸ªå¤šé¡¹å¼ï¼š\n\n");
             poly1 = inputPolynomial();
-            printf("\nÇëÊäÈëµÚ¶ş¸ö¶àÏîÊ½£º\n\n");
+            printf("\nè¯·è¾“å…¥ç¬¬äºŒä¸ªå¤šé¡¹å¼ï¼š\n\n");
             poly2 = inputPolynomial();
 
             break;
@@ -105,17 +105,17 @@ int main()
             case OUTPUT:
             if (poly1 == NULL || poly2 == NULL)
             {
-                printf("ÇëÏÈÊäÈë¶àÏîÊ½£¡\n");
+                printf("è¯·å…ˆè¾“å…¥å¤šé¡¹å¼ï¼\n");
                 break;
             }
             else if (result == NULL)
             {
-                printf("ÇëÏÈ¶Ô¶àÏîÊ½½øĞĞÔËËã£¡\n");
+                printf("è¯·å…ˆå¯¹å¤šé¡¹å¼è¿›è¡Œè¿ç®—ï¼\n");
                 break;
             }
             else
             {
-                printf("½á¹û¶àÏîÊ½£º\n");
+                printf("ç»“æœå¤šé¡¹å¼ï¼š\n");
                 printPolynomial(result);
                 break;
             }
@@ -123,20 +123,20 @@ int main()
             case ADD: case SUB: case MUL:
             if (poly1 == NULL || poly2 == NULL)
             {
-                printf("ÇëÏÈÊäÈë¶àÏîÊ½£¡\n");
+                printf("è¯·å…ˆè¾“å…¥å¤šé¡¹å¼ï¼\n");
                 break;
             }
             else
             {
-                poly1  = sortPolynomial(poly1); // Í¬´ÎÊıºÏ²¢£¬Òì´ÎÊı°´XÉıĞò
+                poly1  = sortPolynomial(poly1); // åŒæ¬¡æ•°åˆå¹¶ï¼Œå¼‚æ¬¡æ•°æŒ‰Xé™åº
                 poly2  = sortPolynomial(poly2);
                 result = operate(choice) (poly1, poly2);
-                printf("ÔËËãÒÑÍê³É.\n");
+                printf("è¿ç®—å·²å®Œæˆ.\n");
                 break;
             }
 
             default:
-            printf("ÎŞĞ§²Ù×÷£¬ÇëÖØĞÂÑ¡Ôñ.\n");
+            printf("æ— æ•ˆæ“ä½œï¼Œè¯·é‡æ–°é€‰æ‹©.\n");
             break;
         }
     }
