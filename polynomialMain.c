@@ -2,19 +2,20 @@
 #include <stdlib.h>
 #include "PolynomialADT.h"
 
-typedef int ChoiceType;
-typedef PolyPtr (*OpFuncPtr)(PolyPtr, PolyPtr);
+typedef int ChoiceType;  // 菜单选项
+typedef PolyPtr (*OpFuncPtr)(PolyPtr, PolyPtr);  // 函数指针，指向运算函数
 
-#define EXIT     0
-#define INPUT    1
-#define ADD      2
-#define SUB      3
-#define MUL      4
-#define OUTPUT   5
-#define UNKNOWN -1
+#define EXIT      0
+#define INPUT     1
+#define ADD       2
+#define SUB       3
+#define MUL       4
+#define OUTPUT    5
+#define SET_DIGIT 6
+#define UNKNOWN  -1
 
 #ifdef linux
-    #define ClearScreen() system("clear")
+    #define ClearScreen() system("clear")  // 清屏宏函数
 #else
     #define ClearScreen() system("cls")
 #endif
@@ -23,6 +24,12 @@ void        buffClear   ();
 OpFuncPtr   operate     (ChoiceType op);
 ChoiceType  promptInput ();
 
+/*
+ * 函数: buffClear
+ * 用法: buffClear();
+ * ------------------------
+ * 清空键盘缓冲区，防止干扰之后输入
+ */
 void buffClear()
 {
     char ch;
@@ -31,6 +38,16 @@ void buffClear()
     } while (ch != '\n' && ch != EOF);
 }
 
+/*
+ * 函数: operate
+ * 用法: resultPoly = operate(choice) (poly1, poly2);
+ * ------------------------
+ * 根据 choice 选择不同的函数操作多项式
+ * choice 可有三种：
+ *      ADD --- 多项式加法
+ *      SUB --- 多项式减法
+ *      MUL --- 多项式乘法
+ */
 OpFuncPtr operate(ChoiceType op)
 {
     switch (op)
@@ -50,17 +67,24 @@ OpFuncPtr operate(ChoiceType op)
     }
 }
 
+/*
+ * 函数: promptInput
+ * 用法: choice = promptInput();
+ * ------------------------
+ * 打印菜单，并返回用户选项
+ */
 ChoiceType promptInput()
 {
     printf("\n请选择操作：\n");
-    printf("-----------------------\n\n");
+    printf("--------------------------\n\n");
     printf("    1 - 多项式输入\n");
     printf("    2 - 多项式相加\n");
     printf("    3 - 多项式相减\n");
     printf("    4 - 多项式相乘\n");
     printf("    5 - 多项式输出\n");
+    printf("    6 - 设置小数保留位数\n");
     printf("    0 - 退出程序\n");
-    printf("-----------------------\n");
+    printf("--------------------------\n");
 
     char input;
     do {
@@ -69,7 +93,7 @@ ChoiceType promptInput()
 
     buffClear();    // 清空缓存区
 
-    if (input >= '0' && input <= '5')   // 检查有效操作范围
+    if (input >= '0' && input <= '6')   // 检查有效操作范围
         return (ChoiceType)(input - '0');
     else
         return UNKNOWN;
@@ -80,6 +104,7 @@ int main()
 {
     PolyPtr poly1, poly2, result;
     ChoiceType choice;
+    int digit = 2;    // 默认保留两位小数
 
     poly1  = NULL;
     poly2  = NULL;
@@ -116,7 +141,7 @@ int main()
             else
             {
                 printf("结果多项式：\n");
-                printPolynomial(result);
+                printPolynomial(result, digit);
                 break;
             }
 
@@ -132,6 +157,22 @@ int main()
                 poly2  = sortPolynomial(poly2);
                 result = operate(choice) (poly1, poly2);
                 printf("运算已完成.\n");
+                break;
+            }
+
+            case SET_DIGIT:
+            printf("请输入保留小数位数(0 ~ 5)：\n\n");
+            int tmp;
+            scanf("%d", &tmp);
+            if (tmp >= 0 && tmp <= 5)
+            {
+                digit = tmp;
+                printf("\n设置完成，保留 %d 位小数.\n", digit);
+                break;
+            }
+            else
+            {
+                printf("\n无效范围，请重新输入.\n");
                 break;
             }
 

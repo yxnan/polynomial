@@ -1,11 +1,9 @@
 # Polynomial
 C Programming Project 2
 
-截至4月10日进展:
+截至4月15日已完成
 
-已完成:
-1. （主文件）polynomialMain.c
+支持操作：
 
-待完成:
-1. PolynomialADT.c: 加、减、乘函数
-2. PolynomialADT.h: 重新定义struct polynomial
+1. 多项式加、减、乘三种运算
+2. 设置显示小数位数 （0～5）
