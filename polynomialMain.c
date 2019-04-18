@@ -14,8 +14,8 @@ typedef PolyPtr (*OpFuncPtr)(PolyPtr, PolyPtr);  // 函数指针，指向运算�
 #define SET_DIGIT 6
 #define UNKNOWN  -1
 
-#ifdef linux
-    #define ClearScreen() system("clear")  // 清屏宏函数
+#ifdef linux     // 跨平台实现
+    #define ClearScreen() printf("\033[H\033[J")  // 清屏宏函数
 #else
     #define ClearScreen() system("cls")
 #endif
